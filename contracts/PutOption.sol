@@ -5,6 +5,12 @@ import './Option.sol';
 
 contract PutOption is Option {
 
+	function PutOption(OptionType _optionType, address _tokenAddress, uint256 _price, uint256 _expiry, uint256 _notional, uint256 _strike)
+	Option(_optionType, _tokenAddress, _price, _expiry, _notional, _strike)
+	{
+
+	}
+
 	function collateralizeOption() payable onlyIssuer {
     state = State.Live;
     if (msg.value != strike * notional) {

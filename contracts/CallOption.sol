@@ -5,6 +5,12 @@ import './Option.sol';
 
 contract CallOption is Option {
 
+	function CallOption(OptionType _optionType, address _tokenAddress, uint256 _price, uint256 _expiry, uint256 _notional, uint256 _strike)
+	Option(_optionType, _tokenAddress, _price, _expiry, _notional, _strike)
+	{
+
+	}
+
 	function collateralizeOption() payable onlyIssuer {
 		state = State.Live;
 		if (msg.value != 0) {
@@ -14,7 +20,7 @@ contract CallOption is Option {
 		OptionEvent(optionType, issuer, counterparty, state, price, expiry, notional, strike);
 	}
 
-	function exerciseOption() payable onlyWhen(State.Active) onlyCounterparty {
+	function exerciseOption() payable onlyCounterparty {
 		state = State.Exercised;
 		if (block.number > expiry) {
 			throw;
@@ -26,7 +32,7 @@ contract CallOption is Option {
 		OptionEvent(optionType, issuer, counterparty, state, price, expiry, notional, strike);
 	}
 
-	function closeOption() notWhen(State.Active) onlyIssuer {
+	function closeOption() onlyIssuer {
 
 		state = State.Closed;
 
