@@ -2,9 +2,10 @@ pragma solidity ^0.4.10;
 
 import '../installed_contracts/zeppelin/contracts/token/ERC20.sol';
 
+//American style vanilla option
 contract Option {
 
-	event OptionEvent(OptionType indexed _optionType, address indexed _issuer, address indexed _counterparty, State _state, uint256 _price, uint256 _expiry, uint256 _notional, uint256 _strike);
+	event OptionEvent(OptionType indexed _optionType, address indexed _issuer, address indexed _counterparty, State _state, uint256 _premium, uint256 _expiry, uint256 _notional, uint256 _strike);
 
 	enum State { Pending, Live, Active, Exercised, Closed }
 
@@ -15,7 +16,7 @@ contract Option {
 	ERC20 public token;
 	address public issuer;
 	address public counterparty;
-	uint256 public price;
+	uint256 public premium;
 	uint256 public expiry;
 	uint256 public notional;
 	uint256 public strike;
@@ -48,16 +49,16 @@ contract Option {
 		_;
 	}
 
-	function Option(OptionType _optionType, address _tokenAddress, uint256 _price, uint256 _expiry, uint256 _notional, uint256 _strike) {
+	function Option(OptionType _optionType, address _tokenAddress, uint256 _premium, uint256 _expiry, uint256 _notional, uint256 _strike) {
 		token = ERC20(_tokenAddress);
     optionType = _optionType;
 		issuer = msg.sender;
-		price = _price;
+		premium = _premium;
 		expiry = _expiry;
 		notional = _notional;
 		strike = _strike;
 		state = State.Pending;
-    OptionEvent(optionType, issuer, counterparty, state, price, expiry, notional, strike);
+    OptionEvent(optionType, issuer, counterparty, state, premium, expiry, notional, strike);
 	}
 
 	function destroy() internal onlyWhen(State.Closed) {
@@ -65,8 +66,8 @@ contract Option {
 	}
 
   function buyOption() payable onlyWhen(State.Live) {
-		if (msg.value != price) {
-			//Wrong price being paid
+		if (msg.value != premium) {
+			//Wrong premium being paid
 			throw;
 		}
 		if (block.number > (expiry - 1)) {
@@ -74,7 +75,7 @@ contract Option {
 		}
 		counterparty = msg.sender;
 		state = State.Active;
-		OptionEvent(optionType, issuer, counterparty, state, price, expiry, notional, strike);
+		OptionEvent(optionType, issuer, counterparty, state, premium, expiry, notional, strike);
 	}
 
   function collateralizeOption() payable onlyWhen(State.Pending);

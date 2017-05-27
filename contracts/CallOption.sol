@@ -1,13 +1,12 @@
 pragma solidity ^0.4.10;
 
-import '../installed_contracts/zeppelin/contracts/token/ERC20.sol';
 import './Option.sol';
 
 //Option which gives the purchaser the right, but not obligation, to buy <notional> tokens at a <strike> price up until <expiry> block number.
 contract CallOption is Option {
 
-	function CallOption(OptionType _optionType, address _tokenAddress, uint256 _price, uint256 _expiry, uint256 _notional, uint256 _strike)
-	Option(_optionType, _tokenAddress, _price, _expiry, _notional, _strike)
+	function CallOption(OptionType _optionType, address _tokenAddress, uint256 _premium, uint256 _expiry, uint256 _notional, uint256 _strike)
+	Option(_optionType, _tokenAddress, _premium, _expiry, _notional, _strike)
 	{
 
 	}
@@ -23,7 +22,7 @@ contract CallOption is Option {
 		}
 		//Collateralize option with tokens
 		token.transferFrom(issuer, this, notional);
-		OptionEvent(optionType, issuer, counterparty, state, price, expiry, notional, strike);
+		OptionEvent(optionType, issuer, counterparty, state, premium, expiry, notional, strike);
 	}
 
 	//Exercises option - triggered by counterparty
@@ -40,7 +39,7 @@ contract CallOption is Option {
 		//Transfer tokens to counterparty
 		//NB - ether is pulled by issuer using closeOption as a seperate transaction
 		token.transfer(counterparty, notional);
-		OptionEvent(optionType, issuer, counterparty, state, price, expiry, notional, strike);
+		OptionEvent(optionType, issuer, counterparty, state, premium, expiry, notional, strike);
 	}
 
 	function closeOption() onlyIssuer {
@@ -65,7 +64,7 @@ contract CallOption is Option {
 			}
 		}
 
-		OptionEvent(optionType, issuer, counterparty, state, price, expiry, notional, strike);
+		OptionEvent(optionType, issuer, counterparty, state, premium, expiry, notional, strike);
 
 		//Contract is finished, kill it
 		destroy();

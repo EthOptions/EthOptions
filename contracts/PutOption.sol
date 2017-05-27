@@ -1,13 +1,12 @@
 pragma solidity ^0.4.10;
 
-import '../installed_contracts/zeppelin/contracts/token/ERC20.sol';
 import './Option.sol';
 
 contract PutOption is Option {
 
 	//Option which gives the purchaser the right, but not obligation, to sell <notional> tokens at a <strike> price up until <expiry> block number.
-	function PutOption(OptionType _optionType, address _tokenAddress, uint256 _price, uint256 _expiry, uint256 _notional, uint256 _strike)
-	Option(_optionType, _tokenAddress, _price, _expiry, _notional, _strike)
+	function PutOption(OptionType _optionType, address _tokenAddress, uint256 _premium, uint256 _expiry, uint256 _notional, uint256 _strike)
+	Option(_optionType, _tokenAddress, _premium, _expiry, _notional, _strike)
 	{
 
 	}
@@ -19,7 +18,7 @@ contract PutOption is Option {
     if (msg.value != strike * notional) {
 			throw;
 		}
-		OptionEvent(optionType, issuer, counterparty, state, price, expiry, notional, strike);
+		OptionEvent(optionType, issuer, counterparty, state, premium, expiry, notional, strike);
 	}
 
 	//Exercises option - triggered by counterparty
@@ -41,7 +40,7 @@ contract PutOption is Option {
     if (!msg.sender.send(this.balance)) {
       throw;
     }
-		OptionEvent(optionType, issuer, counterparty, state, price, expiry, notional, strike);
+		OptionEvent(optionType, issuer, counterparty, state, premium, expiry, notional, strike);
 	}
 
 	function closeOption() onlyIssuer {
@@ -66,7 +65,7 @@ contract PutOption is Option {
 			}
 		}
 
-		OptionEvent(optionType, issuer, counterparty, state, price, expiry, notional, strike);
+		OptionEvent(optionType, issuer, counterparty, state, premium, expiry, notional, strike);
 
 		destroy();
 
