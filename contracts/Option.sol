@@ -81,6 +81,6 @@ contract Option {
 
 	function exerciseOption() payable onlyWhen(State.Active);
 
-	function closeOption() notWhen(State.Active);
+	function closeOption();
 
 }
